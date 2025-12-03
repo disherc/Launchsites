@@ -35,11 +35,9 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Hide scrollbar for legal text but allow scrolling */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-white text-slate-800 selection:bg-red-100">
@@ -48,24 +46,12 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- ICONS (Inlined for standalone usage) ---
+        // --- ICONS ---
         const Icon = ({ path, className, ...props }) => (
-            <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="24" height="24" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className={className}
-                {...props}
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
                 {path}
             </svg>
         );
-
         const Phone = (props) => <Icon path={<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.05 12.05 0 0 0 .57 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.05 12.05 0 0 0 2.81.57A2 2 0 0 1 22 16.92z"></path>} {...props} />;
         const MapPin = (props) => <Icon path={<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></>} {...props} />;
         const Clock = (props) => <Icon path={<><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></>} {...props} />;
@@ -90,65 +76,22 @@
         const Award = (props) => <Icon path={<><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></>} {...props} />;
         const FileText = (props) => <Icon path={<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></>} {...props} />;
 
-        // --- PAYMENT LOGOS (SVG Components) ---
-        const ApplePayLogo = () => (
-            <svg width="45" height="18" viewBox="0 0 45 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6.28 7.37C6.3 6.13 7.02 5.09 7.84 4.58C7.14 3.75 6.09 3.32 5.23 3.36C4.46 3.39 3.73 3.82 3.34 3.82C2.94 3.82 2.33 3.42 1.69 3.43C0.84 3.44 -0.01 4.13 0.09 5.86C0.19 7.42 1.49 10.45 2.82 10.4C3.29 10.39 3.63 10.08 4.21 10.08C4.78 10.08 5.07 10.4 5.59 10.39C6.91 10.36 7.9 8.78 8.02 8.52C8.0 8.51 6.25 7.96 6.28 7.37Z"/>
-                <path d="M5.56 3.14C5.9 2.73 6.13 2.16 6.07 1.6C5.58 1.62 4.98 1.93 4.63 2.35C4.31 2.73 4.06 3.32 4.14 3.87C4.68 3.91 5.23 3.55 5.56 3.14Z"/>
-                <path d="M12.9 10.3h1.36V3.53h-1.99c-0.29 1.15-0.74 2.17-1.34 3.03l-0.34 0.49l-0.34-0.49c-0.6-0.86-1.05-1.88-1.34-3.03H6.87v6.77h1.36V6.05c0.41 1.09 1.02 2.38 1.66 3.23c0.64-0.85 1.25-2.14 1.66-3.23V10.3Z"/>
-            </svg>
-        );
-
-        const GooglePayLogo = () => (
-            <div className="flex items-center justify-center gap-1.5">
-                <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" fill="#FBBC05"/>
-                    <path d="M12 4.64c1.61 0 3.06.56 4.21 1.64l3.16-3.16C17.45 1.18 14.97 0 12 0 7.7 0 3.99 2.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                <span className="font-bold text-slate-600 text-lg tracking-tight">Pay</span>
-            </div>
-        );
-
-        const StripeLogo = ({ height = "32", color = "#635BFF" }) => (
-            <svg viewBox="0 0 60 25" height={height} fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill={color} d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.94 0-5.12 2.87-7.27 6.09-7.27 4.54 0 6.09 3.51 6.09 7.37v1.83h.02zM52.02 11.2h3.2c-.32-1.83-1.31-2.43-2.43-2.43-1.6 0-2.43 1.12-2.43 2.43h1.66zm-13.36 9.1h-4.2V5.48h4.2v14.82zm-3.23-17.3c-1.38 0-2.43 1.05-2.43 2.43 0 1.38 1.05 2.43 2.43 2.43 1.38 0 2.43-1.05 2.43-2.43 0-1.38-1.05-2.43-2.43-2.43zm-7.66 17.3h-4.2V9.38h4.2v1.54c.7-1.15 2.05-1.86 3.51-1.86 1.95 0 3.55.99 3.55 4.35v6.86h-4.2v-5.63c0-1.92-.83-2.59-2.02-2.59-1.34 0-2.62.93-2.62 3.42v4.8h1.78zm-9.97 0H13.6V5.48h4.2v3.7a5.59 5.59 0 0 0 3.7-1.32v3.9a8.66 8.66 0 0 1-3.71.84v7.7h.01zm-5.74 0H7.87V17.3H6.23v-2.3h1.63v-2.63c0-3.32 1.95-4.76 4.96-4.76.8 0 1.76.16 2.3.38v3.23a4.7 4.7 0 0 0-1.57-.29c-1.18 0-1.47.51-1.47 1.54v2.52h3.04v2.3h-3.04v3zm-8.23-.32a6.38 6.38 0 0 1-3.84-5.63c0-4.03 2.94-7.42 7.16-7.42 2.02 0 3.58.55 4.86 1.38l-1.34 3.04a5.2 5.2 0 0 0-3.46-1.03c-2.14 0-3.23 1.5-3.23 3.65 0 2.43 1.63 3.33 4.19 2.3l.87 3.08a8.9 8.9 0 0 1-5.16.63h-.01z" />
-            </svg>
-        );
-
-        const VisaLogo = () => (
-            <svg width="32" height="20" viewBox="0 0 32 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12.2 2.5h2.6l-1.6 10h-2.6l1.6-10zM21.5 2.5h-1.9c-.7 0-1.2.2-1.5 1l-4.3 10.1h2.7l.5-1.5h3.4l.3 1.5h2.4L21.5 2.5zm-3.8 7.3l1.1-3c0-.1.1-.3.2-.5l.6 3.4H17.7zM26.4 4.6c-.5-.2-1.3-.4-2.3-.4-2.5 0-4.3 1.3-4.3 3.2 0 1.4 1.3 2.1 2.2 2.6 1 .5 1.3.8 1.3 1.2 0 .7-.8 1-1.6 1-1.1 0-1.7-.2-2.6-.5l-.4-.2-.4 2.4c.7.3 1.9.6 3.2.6 3 0 5-1.5 5-3.8 0-1.3-.7-2.2-2.4-3-.9-.5-1.5-.8-1.5-1.3 0-.4.5-.9 1.6-.9.9 0 1.6.2 2.1.4l.2.1.3-2.4h-.1zM8.3 2.5H5.4L3.6 10 2.9 5.8c-.1-.5-.2-.7-.7-.9C1.6 4.7.7 4.5 0 4.3l.1 1.7c.9.2 1.7.5 2.3 1.2.2.3.8 2.8.8 2.8l1.4 6.5h2.8l4.2-10z" />
-            </svg>
-        );
-
-        const MastercardLogo = () => (
-            <svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="11" cy="10" r="6" fill="#EA001B"/>
-                <circle cx="21" cy="10" r="6" fill="#FFA200" fillOpacity="0.8"/>
-                <path d="M16 6a5.99 5.99 0 0 0-2.8 4.8c0 2 1.1 3.8 2.8 4.8a5.99 5.99 0 0 0 2.8-4.8 6 6 0 0 0-2.8-4.8z" fill="#FF5F00"/>
-            </svg>
-        );
-
+        // --- PAYMENT LOGOS ---
+        const ApplePayLogo = () => (<svg width="45" height="18" viewBox="0 0 45 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6.28 7.37C6.3 6.13 7.02 5.09 7.84 4.58C7.14 3.75 6.09 3.32 5.23 3.36C4.46 3.39 3.73 3.82 3.34 3.82C2.94 3.82 2.33 3.42 1.69 3.43C0.84 3.44 -0.01 4.13 0.09 5.86C0.19 7.42 1.49 10.45 2.82 10.4C3.29 10.39 3.63 10.08 4.21 10.08C4.78 10.08 5.07 10.4 5.59 10.39C6.91 10.36 7.9 8.78 8.02 8.52C8.0 8.51 6.25 7.96 6.28 7.37Z"/><path d="M5.56 3.14C5.9 2.73 6.13 2.16 6.07 1.6C5.58 1.62 4.98 1.93 4.63 2.35C4.31 2.73 4.06 3.32 4.14 3.87C4.68 3.91 5.23 3.55 5.56 3.14Z"/><path d="M12.9 10.3h1.36V3.53h-1.99c-0.29 1.15-0.74 2.17-1.34 3.03l-0.34 0.49l-0.34-0.49c-0.6-0.86-1.05-1.88-1.34-3.03H6.87v6.77h1.36V6.05c0.41 1.09 1.02 2.38 1.66 3.23c0.64-0.85 1.25-2.14 1.66-3.23V10.3Z"/></svg>);
+        const GooglePayLogo = () => (<div className="flex items-center justify-center gap-1.5"><svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" fill="#FBBC05"/><path d="M12 4.64c1.61 0 3.06.56 4.21 1.64l3.16-3.16C17.45 1.18 14.97 0 12 0 7.7 0 3.99 2.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg><span className="font-bold text-slate-600 text-lg tracking-tight">Pay</span></div>);
+        const StripeLogo = ({ height = "32", color = "#635BFF" }) => (<svg viewBox="0 0 60 25" height={height} fill="none" xmlns="http://www.w3.org/2000/svg"><path fill={color} d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.94 0-5.12 2.87-7.27 6.09-7.27 4.54 0 6.09 3.51 6.09 7.37v1.83h.02zM52.02 11.2h3.2c-.32-1.83-1.31-2.43-2.43-2.43-1.6 0-2.43 1.12-2.43 2.43h1.66zm-13.36 9.1h-4.2V5.48h4.2v14.82zm-3.23-17.3c-1.38 0-2.43 1.05-2.43 2.43 0 1.38 1.05 2.43 2.43 2.43 1.38 0 2.43-1.05 2.43-2.43 0-1.38-1.05-2.43-2.43-2.43zm-7.66 17.3h-4.2V9.38h4.2v1.54c.7-1.15 2.05-1.86 3.51-1.86 1.95 0 3.55.99 3.55 4.35v6.86h-4.2v-5.63c0-1.92-.83-2.59-2.02-2.59-1.34 0-2.62.93-2.62 3.42v4.8h1.78zm-9.97 0H13.6V5.48h4.2v3.7a5.59 5.59 0 0 0 3.7-1.32v3.9a8.66 8.66 0 0 1-3.71.84v7.7h.01zm-5.74 0H7.87V17.3H6.23v-2.3h1.63v-2.63c0-3.32 1.95-4.76 4.96-4.76.8 0 1.76.16 2.3.38v3.23a4.7 4.7 0 0 0-1.57-.29c-1.18 0-1.47.51-1.47 1.54v2.52h3.04v2.3h-3.04v3zm-8.23-.32a6.38 6.38 0 0 1-3.84-5.63c0-4.03 2.94-7.42 7.16-7.42 2.02 0 3.58.55 4.86 1.38l-1.34 3.04a5.2 5.2 0 0 0-3.46-1.03c-2.14 0-3.23 1.5-3.23 3.65 0 2.43 1.63 3.33 4.19 2.3l.87 3.08a8.9 8.9 0 0 1-5.16.63h-.01z" /></svg>);
+        const VisaLogo = () => (<svg width="32" height="20" viewBox="0 0 32 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.2 2.5h2.6l-1.6 10h-2.6l1.6-10zM21.5 2.5h-1.9c-.7 0-1.2.2-1.5 1l-4.3 10.1h2.7l.5-1.5h3.4l.3 1.5h2.4L21.5 2.5zm-3.8 7.3l1.1-3c0-.1.1-.3.2-.5l.6 3.4H17.7zM26.4 4.6c-.5-.2-1.3-.4-2.3-.4-2.5 0-4.3 1.3-4.3 3.2 0 1.4 1.3 2.1 2.2 2.6 1 .5 1.3.8 1.3 1.2 0 .7-.8 1-1.6 1-1.1 0-1.7-.2-2.6-.5l-.4-.2-.4 2.4c.7.3 1.9.6 3.2.6 3 0 5-1.5 5-3.8 0-1.3-.7-2.2-2.4-3-.9-.5-1.5-.8-1.5-1.3 0-.4.5-.9 1.6-.9.9 0 1.6.2 2.1.4l.2.1.3-2.4h-.1zM8.3 2.5H5.4L3.6 10 2.9 5.8c-.1-.5-.2-.7-.7-.9C1.6 4.7.7 4.5 0 4.3l.1 1.7c.9.2 1.7.5 2.3 1.2.2.3.8 2.8.8 2.8l1.4 6.5h2.8l4.2-10z" /></svg>);
+        const MastercardLogo = () => (<svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="10" r="6" fill="#EA001B"/><circle cx="21" cy="10" r="6" fill="#FFA200" fillOpacity="0.8"/><path d="M16 6a5.99 5.99 0 0 0-2.8 4.8c0 2 1.1 3.8 2.8 4.8a5.99 5.99 0 0 0 2.8-4.8 6 6 0 0 0-2.8-4.8z" fill="#FF5F00"/></svg>);
         const PaymentIconsSmall = () => (
             <div className="flex gap-2 items-center">
-                <div className="bg-white/10 rounded px-1.5 py-1">
-                    <span className="font-bold text-[10px] text-white tracking-tighter">VISA</span>
-                </div>
-                <div className="bg-white/10 rounded px-1.5 py-1 flex -space-x-1">
-                    <div className="w-2.5 h-2.5 rounded-full bg-white/80"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-white/50"></div>
-                </div>
-                <div className="bg-white/10 rounded px-1.5 py-1">
-                    <span className="font-bold text-[10px] text-white">AMEX</span>
-                </div>
+                <div className="bg-white/10 rounded px-1.5 py-1"><span className="font-bold text-[10px] text-white tracking-tighter">VISA</span></div>
+                <div className="bg-white/10 rounded px-1.5 py-1 flex -space-x-1"><div className="w-2.5 h-2.5 rounded-full bg-white/80"></div><div className="w-2.5 h-2.5 rounded-full bg-white/50"></div></div>
+                <div className="bg-white/10 rounded px-1.5 py-1"><span className="font-bold text-[10px] text-white">AMEX</span></div>
                 <div className="text-[10px] text-white/60">+ Apple Pay</div>
             </div>
         );
 
         // --- COMPONENTS ---
-
         const FeatureCard = ({ icon, title, description }) => (
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow">
                 <div className="mb-4 p-3 bg-slate-50 inline-block rounded-xl text-red-600">{icon}</div>
@@ -156,135 +99,70 @@
                 <p className="text-slate-600 leading-relaxed">{description}</p>
             </div>
         );
-
         const IndustryCard = ({ icon, title }) => (
             <div className="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-xl hover:bg-red-50 transition-colors border border-slate-100 hover:border-red-100 group cursor-pointer">
-                <div className="mb-3 text-slate-400 group-hover:text-red-600 transition-colors">
-                    {React.cloneElement(icon, { size: 32 })}
-                </div>
+                <div className="mb-3 text-slate-400 group-hover:text-red-600 transition-colors">{React.cloneElement(icon, { size: 32 })}</div>
                 <span className="font-bold text-slate-700 group-hover:text-slate-900 text-center">{title}</span>
             </div>
         );
-
         const TimelineItem = ({ number, title, text }) => (
             <div className="flex gap-6">
-                <div className="shrink-0 w-12 h-12 rounded-full bg-red-100 text-red-600 font-bold text-xl flex items-center justify-center">
-                    {number}
-                </div>
-                <div>
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">{title}</h4>
-                    <p className="text-slate-600">{text}</p>
-                </div>
+                <div className="shrink-0 w-12 h-12 rounded-full bg-red-100 text-red-600 font-bold text-xl flex items-center justify-center">{number}</div>
+                <div><h4 className="text-xl font-bold text-slate-900 mb-2">{title}</h4><p className="text-slate-600">{text}</p></div>
             </div>
         );
-
         const PricingCard = ({ title, price, subtitle, features, buttonVariant, onSelect }) => (
             <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative overflow-hidden">
                 <h3 className="text-2xl font-bold mb-2">{title}</h3>
-                <div className="flex items-baseline gap-1 mb-2">
-                    <span className="text-4xl font-extrabold">{price}</span>
-                    {price !== "Custom" && <span className="text-slate-400 ml-1">one-time</span>}
-                </div>
+                <div className="flex items-baseline gap-1 mb-2"><span className="text-4xl font-extrabold">{price}</span>{price !== "Custom" && <span className="text-slate-400 ml-1">one-time</span>}</div>
                 <p className="text-slate-400 mb-8 text-sm">{subtitle}</p>
-                
                 <ul className="space-y-4 mb-8 flex-1">
                     {features.map((item, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                            <CheckCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                            <span className="font-medium text-slate-200">{item}</span>
-                        </li>
+                        <li key={i} className="flex items-start gap-3"><CheckCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" /><span className="font-medium text-slate-200">{item}</span></li>
                     ))}
                 </ul>
-                
-                <button 
-                    onClick={onSelect}
-                    className={`w-full py-3 rounded-xl font-bold transition-colors ${
-                        buttonVariant === 'secondary' 
-                        ? 'bg-slate-700 hover:bg-slate-600 text-white' 
-                        : 'bg-red-600 hover:bg-red-700 text-white'
-                    }`}
-                >
-                    Select Plan
-                </button>
-                <div className="mt-6 flex justify-center gap-3 opacity-60">
-                    <PaymentIconsSmall />
-                </div>
+                <button onClick={onSelect} className={`w-full py-3 rounded-xl font-bold transition-colors ${buttonVariant === 'secondary' ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}>Select Plan</button>
+                <div className="mt-6 flex justify-center gap-3 opacity-60"><PaymentIconsSmall /></div>
             </div>
         );
-
         const FaqItem = ({ question, answer }) => {
             const [isOpen, setIsOpen] = useState(false);
             return (
                 <div className="border-b border-slate-100 pb-6 last:border-0 last:pb-0">
-                    <button 
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="flex justify-between items-center w-full text-left focus:outline-none"
-                    >
-                        <h4 className="text-lg font-bold text-slate-900">{question}</h4>
-                        {isOpen ? <X className="w-5 h-5 text-red-600" /> : <ArrowRight className="w-5 h-5 text-slate-400" />}
-                    </button>
-                    {isOpen && (
-                        <p className="mt-4 text-slate-600 leading-relaxed pr-8 animate-fadeIn">
-                            {answer}
-                        </p>
-                    )}
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex justify-between items-center w-full text-left focus:outline-none"><h4 className="text-lg font-bold text-slate-900">{question}</h4>{isOpen ? <X className="w-5 h-5 text-red-600" /> : <ArrowRight className="w-5 h-5 text-slate-400" />}</button>
+                    {isOpen && <p className="mt-4 text-slate-600 leading-relaxed pr-8 animate-fadeIn">{answer}</p>}
                 </div>
             );
         };
-
         const LegalModal = ({ type, onClose }) => {
             const isTerms = type === 'terms';
             return (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center px-4 pt-12 pb-4">
-                    <div 
-                        className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" 
-                        onClick={onClose}
-                    ></div>
-                    
+                    <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
                     <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl h-full md:h-auto md:max-h-[85vh] flex flex-col animate-fadeInUp">
                         <div className="bg-slate-50 px-8 py-5 border-b border-slate-100 flex justify-between items-center rounded-t-2xl">
-                            <div className="flex items-center gap-3">
-                                <FileText className="w-6 h-6 text-red-600" />
-                                <h2 className="text-2xl font-bold text-slate-900">{isTerms ? 'Terms of Service' : 'Privacy Policy'}</h2>
-                            </div>
-                            <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
-                                <X className="w-6 h-6 text-slate-500 hover:text-slate-800"/>
-                            </button>
+                            <div className="flex items-center gap-3"><FileText className="w-6 h-6 text-red-600" /><h2 className="text-2xl font-bold text-slate-900">{isTerms ? 'Terms of Service' : 'Privacy Policy'}</h2></div>
+                            <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X className="w-6 h-6 text-slate-500 hover:text-slate-800"/></button>
                         </div>
-
                         <div className="p-8 overflow-y-auto custom-scrollbar text-left">
                             {isTerms ? (
                                 <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-600">
                                     <p className="font-bold">Last Updated: {new Date().toLocaleDateString()}</p>
-                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">1. Introduction</h3>
-                                    <p>Welcome to Launchsites.ca. By purchasing our services, you agree to be bound by the following terms and conditions.</p>
-                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">2. Services & Fulfillment</h3>
-                                    <p>We provide website design, hosting, and maintenance services ("The Service"). The scope of work is defined by the package purchased (The One-Pager or Business Pro). We guarantee a live website within 5 business days of receiving all necessary business details and payment from the client.</p>
-                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">3. Fees & Payments</h3>
-                                    <ul className="list-disc pl-5 space-y-1">
-                                        <li><strong>Setup Fee:</strong> A one-time payment is required to commence work.</li>
-                                        <li><strong>Monthly Hosting & Support:</strong> A recurring monthly fee ($49 or $79 depending on plan) begins immediately upon site launch. This fee covers hosting, SSL security, daily backups, and the allotted revisions.</li>
-                                    </ul>
-                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">4. Money-Back Guarantee & Refunds</h3>
-                                    <p>Our "Love It or Leave It" guarantee applies to the initial design phase. On Day 3 of the process, we will present a draft of the website. If you are not satisfied and do not wish to proceed, you may request a full refund of your setup fee. Once the design is approved and the site goes live on Day 5, the setup fee becomes non-refundable.</p>
+                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">1. Introduction</h3><p>Welcome to Launchsites.ca. By purchasing our services, you agree to be bound by the following terms and conditions.</p>
+                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">2. Services & Fulfillment</h3><p>We provide website design, hosting, and maintenance services ("The Service"). The scope of work is defined by the package purchased (The One-Pager or Business Pro). We guarantee a live website within 5 business days of receiving all necessary business details and payment from the client.</p>
+                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">3. Fees & Payments</h3><ul className="list-disc pl-5 space-y-1"><li><strong>Setup Fee:</strong> A one-time payment is required to commence work.</li><li><strong>Monthly Hosting & Support:</strong> A recurring monthly fee ($49 or $79 depending on plan) begins immediately upon site launch. This fee covers hosting, SSL security, daily backups, and the allotted revisions.</li></ul>
+                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">4. Money-Back Guarantee & Refunds</h3><p>Our "Love It or Leave It" guarantee applies to the initial design phase. On Day 3 of the process, we will present a draft of the website. If you are not satisfied and do not wish to proceed, you may request a full refund of your setup fee. Once the design is approved and the site goes live on Day 5, the setup fee becomes non-refundable.</p>
                                 </div>
                             ) : (
                                 <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-600">
                                     <p className="font-bold">Last Updated: {new Date().toLocaleDateString()}</p>
-                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">1. Information We Collect</h3>
-                                    <p>When you purchase a service from Launchsites.ca, we collect personal information necessary to fulfill your order, including Name, Business Name, and Contact Information.</p>
-                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">2. How We Use Your Information</h3>
-                                    <p>We use your information solely for the purpose of building/hosting your website, processing monthly billing, and communicating regarding updates.</p>
-                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">5. Contact Us</h3>
-                                    <p>If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please contact us at:</p>
-                                    <p className="font-bold mt-2">support@launchsites.ca</p>
+                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">1. Information We Collect</h3><p>When you purchase a service from Launchsites.ca, we collect personal information necessary to fulfill your order, including Name, Business Name, and Contact Information.</p>
+                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">2. How We Use Your Information</h3><p>We use your information solely for the purpose of building/hosting your website, processing monthly billing, and communicating regarding updates.</p>
+                                    <h3 className="text-lg font-bold text-slate-900 mt-6 mb-2">5. Contact Us</h3><p>If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please contact us at:</p><p className="font-bold mt-2">support@launchsites.ca</p>
                                 </div>
                             )}
                         </div>
-                        
-                        <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end">
-                            <button onClick={onClose} className="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 transition-colors">Close</button>
-                        </div>
+                        <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end"><button onClick={onClose} className="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 transition-colors">Close</button></div>
                     </div>
                 </div>
             );
@@ -293,7 +171,6 @@
         const App = () => {
             const [isMenuOpen, setIsMenuOpen] = useState(false);
             const [email, setEmail] = useState('');
-            const [message, setMessage] = useState('');
             const [checkoutPlan, setCheckoutPlan] = useState(null);
             const [activeLegalDoc, setActiveLegalDoc] = useState(null);
             const [formStatus, setFormStatus] = useState('idle'); // idle, sending, success, error
@@ -306,42 +183,34 @@
                 setIsMenuOpen(false);
             };
 
-            const handleConsultationSubmit = (e) => {
+            const handleFormSubmit = async (e) => {
                 e.preventDefault();
                 setFormStatus('sending');
-                
+
                 const form = e.target;
                 const formData = new FormData(form);
-                
-                // Configuration for FormSubmit
-                formData.append("_subject", `New Lead: ${form.elements.businessName.value}`);
-                formData.append("_template", "table");
-                formData.append("_captcha", "false"); 
+                // Add custom subject for Web3Forms
+                formData.append("subject", "New Lead: LaunchSites Website");
 
-                fetch("https://formsubmit.co/ajax/support@launchsites.ca", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => {
-                    if (response.ok) {
+                try {
+                    const response = await fetch("https://api.web3forms.com/submit", {
+                        method: "POST",
+                        body: formData
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
                         setFormStatus('success');
                         form.reset();
                         setEmail('');
-                        setMessage('');
-                        setTimeout(() => setFormStatus('idle'), 5000);
                     } else {
-                        // If AJAX fails (e.g. CORS on local), this block runs or .catch runs
-                        // But FormSubmit returns 200 even for verification required
-                        // If it's a real server error:
-                        throw new Error("Form submission failed");
+                        setFormStatus('error');
+                        console.error("Form Error:", result);
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // FALLBACK: If AJAX fails (likely because of local testing), use standard submit
-                    // This forces the browser to handle the POST, which works everywhere but shows the FormSubmit page
-                    form.submit();
-                });
+                } catch (error) {
+                    console.error("Network Error:", error);
+                    setFormStatus('error');
+                }
             };
 
             const handlePayment = (method) => {
@@ -636,10 +505,8 @@
                                             <button onClick={() => setFormStatus('idle')} className="mt-4 text-sm font-bold underline">Send another</button>
                                         </div>
                                     ) : (
-                                        <form action="https://formsubmit.co/support@launchsites.ca" method="POST" onSubmit={handleConsultationSubmit} className="space-y-4">
-                                            <input type="hidden" name="_subject" value="New Lead: LaunchSites" />
-                                            <input type="hidden" name="_captcha" value="false" />
-                                            <input type="hidden" name="_template" value="table" />
+                                        <form onSubmit={handleFormSubmit} className="space-y-4">
+                                            <input type="hidden" name="access_key" value="a8840285-9551-497b-b9a9-2d6a27c78250" />
                                             
                                             <div>
                                                 <label className="block text-sm font-medium text-slate-700 mb-1">Business Name</label>
@@ -668,6 +535,9 @@
                                                     <>Request Demo</>
                                                 )}
                                             </button>
+                                            {formStatus === 'error' && (
+                                                <p className="text-red-600 text-sm text-center mt-2">Something went wrong. Please email us directly at support@launchsites.ca</p>
+                                            )}
                                         </form>
                                     )}
                                 </div>
@@ -675,7 +545,7 @@
                             <div className="mt-20 pt-8 border-t border-slate-200">
                                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                                     <div className="text-slate-400 text-sm text-center md:text-left order-2 md:order-1">
-                                        © {new Date().getFullYear()} Launchsites.ca. All rights reserved.
+                                        © {new Date().getFullYear()} Launchsites.ca. All rights reserved. v3.0 (Web3Forms AJAX)
                                     </div>
                                     <div className="flex gap-6 text-sm text-slate-500 order-1 md:order-2">
                                         <button onClick={() => setActiveLegalDoc('terms')} className="hover:text-red-600 transition-colors">Terms of Service</button>
@@ -712,23 +582,38 @@
                                     <div className="relative flex py-2 items-center mb-6">
                                         <div className="flex-grow border-t border-slate-200"></div><span className="flex-shrink mx-4 text-slate-400 text-xs uppercase font-bold tracking-widest">Or pay with card</span><div className="flex-grow border-t border-slate-200"></div>
                                     </div>
-                                    <form onSubmit={(e) => { e.preventDefault(); handlePayment('Credit Card'); }} className="space-y-4">
-                                        <div className="space-y-3">
-                                            <div>
-                                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
-                                                <div className="relative"><Mail className="absolute left-3 top-3 w-5 h-5 text-slate-400" /><input type="email" placeholder="you@example.com" className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none" required /></div>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Card Information</label>
-                                                <div className="relative"><CreditCard className="absolute left-3 top-3 w-5 h-5 text-slate-400" /><input type="text" placeholder="0000 0000 0000 0000" className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none" /></div>
-                                                <div className="grid grid-cols-2 gap-3 mt-3">
-                                                    <input type="text" placeholder="MM / YY" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none text-center" />
-                                                    <input type="text" placeholder="CVC" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none text-center" />
+                                    
+                                    {formStatus === 'success' ? (
+                                        <div className="bg-green-50 border border-green-200 text-green-700 p-6 rounded-xl text-center animate-fadeInUp">
+                                            <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-600" />
+                                            <h4 className="font-bold text-lg mb-1">Payment Processed!</h4>
+                                            <p>We have received your details and will contact you shortly to get started.</p>
+                                        </div>
+                                    ) : (
+                                        <form onSubmit={handleFormSubmit} className="space-y-4">
+                                            <input type="hidden" name="access_key" value="a8840285-9551-497b-b9a9-2d6a27c78250" />
+                                            <input type="hidden" name="subject" value="New Order: LaunchSites Checkout" />
+                                            
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+                                                    <div className="relative"><Mail className="absolute left-3 top-3 w-5 h-5 text-slate-400" /><input name="email" type="email" placeholder="you@example.com" className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none" required /></div>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Card Information</label>
+                                                    <div className="relative"><CreditCard className="absolute left-3 top-3 w-5 h-5 text-slate-400" /><input name="card_details" type="text" placeholder="0000 0000 0000 0000" className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none" /></div>
+                                                    <div className="grid grid-cols-2 gap-3 mt-3">
+                                                        <input name="card_expiry" type="text" placeholder="MM / YY" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none text-center" />
+                                                        <input name="card_cvc" type="text" placeholder="CVC" className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none text-center" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <button type="submit" className="w-full bg-red-600 text-white h-12 rounded-lg font-bold text-lg hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 mt-2 flex items-center justify-center gap-2"><Lock className="w-4 h-4" /> Pay Securely</button>
-                                    </form>
+                                            <button type="submit" disabled={formStatus === 'sending'} className="w-full bg-red-600 text-white h-12 rounded-lg font-bold text-lg hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 mt-2 flex items-center justify-center gap-2">
+                                                {formStatus === 'sending' ? 'Processing...' : <><Lock className="w-4 h-4" /> Pay Securely</>}
+                                            </button>
+                                        </form>
+                                    )}
+
                                     <div className="mt-4 text-center">
                                         <div className="text-xs text-slate-400 flex items-center justify-center gap-2"><span className="flex items-center gap-1">Powered by <StripeLogo height="14" color="#94a3b8" /></span><span className="w-1 h-1 rounded-full bg-slate-300"></span><span>256-bit SSL Encrypted</span></div>
                                     </div>
